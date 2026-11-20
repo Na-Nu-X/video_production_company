@@ -1,0 +1,213 @@
+<!-- ============================== HERO ============================== -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__bg" aria-hidden="true">
+    <img [src]="site.heroImageUrl" alt="" fetchpriority="high" decoding="async" />
+  </div>
+  <div class="hero__grain" aria-hidden="true"></div>
+
+  <div class="hud" aria-hidden="true">
+    <span class="hud__corner hud__corner--tl"></span>
+    <span class="hud__corner hud__corner--tr"></span>
+    <span class="hud__corner hud__corner--bl"></span>
+    <span class="hud__corner hud__corner--br"></span>
+    <span class="hud__rec mono"><span class="hud__dot"></span>REC</span>
+    <span class="hud__tc mono">{{ timecode() }}</span>
+    <span class="hud__spec mono">6K RAW · 24 FPS · 2.39:1</span>
+  </div>
+
+  <div class="container hero__content">
+    <p class="eyebrow">Video produkčné štúdio · {{ site.address.city }}</p>
+    <h1 id="hero-title" class="hero__title">
+      {{ site.heroHeadline.lead }}
+      <em>{{ site.heroHeadline.highlight }}</em>
+      {{ site.heroHeadline.tail }}
+    </h1>
+    <p class="hero__lead">{{ site.heroSubline }}</p>
+
+    <div class="hero__actions">
+      <button type="button" class="showreel" (click)="playShowreel()">
+        <span class="showreel__btn"><app-icon name="play" [size]="22" /></span>
+        <span class="showreel__text">
+          <strong>Prehrať Showreel</strong>
+          <span class="mono">{{ site.showreel.title }} · {{ site.showreel.duration }}</span>
+        </span>
+      </button>
+      <div class="hero__ctas">
+        <a class="btn btn--primary btn--lg" routerLink="/" fragment="kalkulacka">
+          Nezáväzná kalkulácia videa
+          <app-icon name="arrow-right" [size]="18" />
+        </a>
+        <a class="btn btn--ghost btn--lg" routerLink="/portfolio">Pozrieť naše práce</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <dl class="metrics">
+      @for (metric of site.trustMetrics; track metric.label) {
+        <div class="metric">
+          <dt class="metric__label">{{ metric.label }}</dt>
+          <dd class="metric__value">{{ metric.value }}</dd>
+        </div>
+      }
+    </dl>
+  </div>
+</section>
+
+<!-- ============================== CLIENTS ============================== -->
+<section class="clients" aria-label="Naši klienti">
+  <div class="clients__track">
+    @for (pass of [0, 1]; track pass) {
+      <ul [attr.aria-hidden]="pass === 1 ? 'true' : null">
+        @for (client of site.clientLogos; track client) {
+          <li>{{ client }}</li>
+        }
+      </ul>
+    }
+  </div>
+</section>
+
+<!-- ============================== FEATURED FILMS ============================== -->
+<section class="section" aria-labelledby="featured-title">
+  <div class="container">
+    <header class="section-head section-head--split">
+      <div>
+        <p class="eyebrow">Vybrané projekty</p>
+        <h2 id="featured-title">Portfólio, ktoré hovorí za nás</h2>
+      </div>
+      <a class="btn btn--ghost" routerLink="/portfolio">
+        Celé portfólio
+        <app-icon name="arrow-right" [size]="16" />
+      </a>
+    </header>
+
+    @if (films.isLoading() && !featuredFilms().length) {
+      <div class="films">
+        @for (i of [1, 2, 3, 4, 5]; track i) {
+          <div class="skeleton film-skeleton" [class.film-skeleton--large]="i === 1"></div>
+        }
+      </div>
+    } @else if (films.error()) {
+      <div class="state-message">
+        <strong>Portfólio sa nepodarilo načítať</strong>
+        Skontrolujte pripojenie alebo to skúste o chvíľu.
+        <button type="button" class="btn btn--link" (click)="films.reload()">Skúsiť znova</button>
+      </div>
+    } @else {
+      <div class="films">
+        @for (film of featuredFilms(); track film.id; let first = $first; let i = $index) {
+          <app-film-card
+            [film]="film"
+            [size]="first ? 'large' : 'default'"
+            [class.films__lead]="first"
+            [appReveal]="i * 80"
+          />
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ============================== SERVICES ============================== -->
+<section class="section section--surface" aria-labelledby="services-title">
+  <div class="container">
+    <header class="section-head section-head--split">
+      <div>
+        <p class="eyebrow">Služby</p>
+        <h2 id="services-title">Čo pre vás natočíme</h2>
+      </div>
+      <p class="lead">Od 15-sekundového Reelsu až po celoplošnú TV kampaň. Každú produkciu staviame na príbehu a remeselnej precíznosti.</p>
+    </header>
+
+    @if (services.error()) {
+      <div class="state-message"><strong>Služby sa nepodarilo načítať</strong>Skúste obnoviť stránku.</div>
+    } @else {
+      <ul class="services">
+        @for (service of services.value(); track service.id; let i = $index) {
+          <li class="service" [appReveal]="i * 60">
+            <span class="service__num mono">{{ (i + 1).toString().padStart(2, '0') }}</span>
+            <app-icon class="service__icon" [name]="service.category.icon_name" [size]="28" [strokeWidth]="1.3" />
+            <h3 class="service__title">{{ service.title }}</h3>
+            <p class="service__text">{{ service.short_description }}</p>
+            <div class="service__meta">
+              @if (service.starting_price_eur) {
+                <span class="mono service__price">od {{ service.starting_price_eur | eur }}</span>
+              }
+              <span class="pill pill--success">{{ service.typical_delivery_time }}</span>
+            </div>
+          </li>
+        } @empty {
+          @if (services.isLoading()) {
+            @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+              <li class="service skeleton service--skeleton"></li>
+            }
+          }
+        }
+      </ul>
+      <div class="services__more">
+        <a class="btn btn--link" routerLink="/sluzby">
+          Všetky služby a naša technika
+          <app-icon name="arrow-right" [size]="16" />
+        </a>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ============================== ESTIMATOR ============================== -->
+<section id="kalkulacka" class="section estimator-section" aria-labelledby="estimator-title">
+  <div class="container">
+    <header class="section-head">
+      <p class="eyebrow">Kalkulačka ceny</p>
+      <h2 id="estimator-title">Koľko bude stáť vaše video?</h2>
+      <p class="lead">
+        Nakonfigurujte si produkciu a okamžite uvidíte orientačný rozpočet, odporúčaný štáb aj termín dodania.
+        Kalkuláciu nám jedným klikom pošlete ako brief.
+      </p>
+    </header>
+    <app-video-budget-estimator />
+  </div>
+</section>
+
+<!-- ============================== WORKFLOW ============================== -->
+<section class="section band-light" aria-labelledby="workflow-title">
+  <div class="container">
+    <header class="section-head">
+      <p class="eyebrow">Ako pracujeme</p>
+      <h2 id="workflow-title">Od prvého nápadu po finálny export</h2>
+    </header>
+
+    <ol class="workflow">
+      @for (step of workflow; track step.number; let i = $index) {
+        <li class="step" [appReveal]="i * 90">
+          <span class="step__num">{{ step.number }}</span>
+          <h3 class="step__title">{{ step.title }}</h3>
+          <p class="step__text">{{ step.text }}</p>
+          <span class="step__duration mono"><app-icon name="clock" [size]="14" /> {{ step.duration }}</span>
+        </li>
+      }
+    </ol>
+  </div>
+</section>
+
+<!-- ============================== TESTIMONIALS ============================== -->
+<section class="section" aria-labelledby="testimonials-title">
+  <div class="container">
+    <header class="section-head">
+      <p class="eyebrow">Referencie</p>
+      <h2 id="testimonials-title">Čo hovoria klienti</h2>
+    </header>
+    <div class="testimonials">
+      @for (t of site.testimonials; track t.author; let i = $index) {
+        <figure class="testimonial" [appReveal]="i * 80">
+          <app-icon name="quote" [size]="28" class="testimonial__icon" />
+          <blockquote>{{ t.quote }}</blockquote>
+          <figcaption>
+            <strong>{{ t.author }}</strong>
+            <span>{{ t.role }}, {{ t.company }}</span>
+          </figcaption>
+        </figure>
+      }
+    </div>
+  </div>
+</section>

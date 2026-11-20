@@ -1,0 +1,409 @@
+@use 'variables' as v;
+@use 'mixins' as m;
+
+.section--tight {
+  padding-top: v.$space-7;
+}
+
+.layout {
+  display: grid;
+  gap: v.$space-7;
+
+  @include m.up(lg) {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    align-items: start;
+    gap: v.$space-8;
+  }
+}
+
+.wizard {
+  scroll-margin-top: calc(var(--header-height) + 1rem);
+  min-width: 0;
+}
+
+// ---------------------------------------------------------------- stepper
+.stepper {
+  @include m.reset-list;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: v.$space-2;
+  margin-bottom: v.$space-6;
+
+  &__btn {
+    @include m.reset-button;
+    display: flex;
+    align-items: center;
+    gap: v.$space-3;
+    width: 100%;
+    padding: v.$space-3 0;
+    border-top: 2px solid var(--color-border-strong);
+    text-align: left;
+    color: var(--color-text-muted);
+    transition: color v.$duration-fast ease, border-color v.$duration-fast ease;
+
+    &[aria-current='step'] {
+      border-color: var(--color-accent);
+      color: var(--color-text);
+    }
+
+    &.is-done {
+      border-color: color-mix(in srgb, var(--color-accent) 50%, transparent);
+      color: var(--color-text);
+    }
+  }
+
+  &__num {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    font-size: 0.78rem;
+
+    [aria-current='step'] & {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: var(--color-accent-contrast);
+    }
+
+    .is-done & {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+  }
+
+  &__label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: none;
+
+    @include m.up(sm) {
+      display: inline;
+    }
+  }
+}
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: v.$space-3;
+  margin-bottom: v.$space-5;
+  padding: v.$space-3 v.$space-4;
+  border: 1px solid color-mix(in srgb, var(--color-success) 40%, transparent);
+  background: color-mix(in srgb, var(--color-success) 8%, transparent);
+  color: var(--color-success);
+  font-size: 0.9rem;
+
+  app-icon {
+    margin-top: 3px;
+  }
+}
+
+// ---------------------------------------------------------------- form
+.form {
+  display: grid;
+  gap: v.$space-5;
+}
+
+.panel {
+  display: grid;
+  gap: v.$space-4;
+  margin: 0;
+  padding: v.$space-5;
+  min-width: 0;
+  @include m.surface;
+
+  @include m.up(md) {
+    padding: v.$space-6;
+  }
+
+  &.has-error {
+    border-color: color-mix(in srgb, var(--color-danger) 60%, transparent);
+  }
+
+  &__title {
+    float: left; // makes <legend> behave inside the grid
+    width: 100%;
+    padding: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.2rem;
+
+    + * {
+      clear: both;
+    }
+  }
+}
+
+.optional {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.tiles {
+  display: grid;
+  gap: v.$space-3;
+
+  @include m.up(md) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  &--3 {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: v.$space-2;
+
+  &--sm {
+    margin-top: v.$space-2;
+
+    .chip {
+      min-height: 34px;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+.chip {
+  @include m.reset-button;
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0.45rem 0.95rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  background: var(--color-bg);
+  font-size: 0.88rem;
+  transition: all v.$duration-fast ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+  }
+
+  &[aria-pressed='true'],
+  &[aria-checked='true'] {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-accent-contrast);
+  }
+}
+
+.grid-2 {
+  display: grid;
+  gap: v.$space-4;
+
+  @include m.up(md) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.field__row {
+  display: flex;
+  justify-content: space-between;
+  gap: v.$space-4;
+}
+
+.checkbox {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: v.$space-3;
+  cursor: pointer;
+  font-size: 0.88rem !important;
+  font-weight: 400 !important;
+  color: var(--color-text-muted) !important;
+  line-height: 1.5;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  &__box {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: v.$radius-sm;
+    background: var(--color-bg);
+    color: transparent;
+    transition: all v.$duration-fast ease;
+  }
+
+  input:checked + &__box {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-accent-contrast);
+  }
+
+  input:focus-visible + &__box {
+    @include m.focus-ring;
+  }
+
+  input[aria-invalid='true'] + &__box {
+    border-color: var(--color-danger);
+  }
+}
+
+.alert {
+  padding: v.$space-4;
+  border: 1px solid color-mix(in srgb, var(--color-danger) 50%, transparent);
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
+  font-size: 0.92rem;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: v.$space-3;
+  padding-top: v.$space-2;
+}
+
+// ---------------------------------------------------------------- success
+.success {
+  display: grid;
+  justify-items: start;
+  gap: v.$space-5;
+  padding: v.$space-7 v.$space-6;
+  border: 1px solid color-mix(in srgb, var(--color-success) 40%, transparent);
+  background:
+    radial-gradient(ellipse 60% 80% at 0% 0%, color-mix(in srgb, var(--color-success) 12%, transparent), transparent 70%),
+    var(--color-surface);
+
+  &__icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--color-success);
+    color: var(--color-bg);
+  }
+
+  &__estimate strong {
+    color: var(--color-accent);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$space-3;
+  }
+}
+
+// ---------------------------------------------------------------- sidebar
+.side {
+  display: grid;
+  gap: v.$space-4;
+
+  @include m.up(lg) {
+    position: sticky;
+    top: calc(var(--header-height) + 1.5rem);
+  }
+}
+
+.summary,
+.contact {
+  display: grid;
+  gap: v.$space-3;
+  padding: v.$space-5;
+  @include m.surface;
+}
+
+.summary {
+  &__label {
+    @include m.mono-label(0.68rem);
+    color: var(--color-text-muted);
+  }
+
+  dl {
+    display: grid;
+    margin: 0;
+  }
+
+  dl > div {
+    display: grid;
+    gap: 2px;
+    padding-block: v.$space-3;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  dt {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  dd {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 500;
+  }
+
+  &__estimate {
+    display: grid;
+    gap: v.$space-1;
+    padding-top: v.$space-2;
+  }
+
+  &__price {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  &__note {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+  }
+}
+
+.contact {
+  &__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  &__role {
+    margin-top: -0.5rem;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+  }
+
+  &__line,
+  &__hours {
+    display: flex;
+    align-items: flex-start;
+    gap: v.$space-3;
+    font-size: 0.9rem;
+
+    app-icon {
+      margin-top: 2px;
+      color: var(--color-accent);
+    }
+  }
+
+  &__line:hover {
+    color: var(--color-accent);
+  }
+
+  &__hours {
+    color: var(--color-text-muted);
+  }
+}

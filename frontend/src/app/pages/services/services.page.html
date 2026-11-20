@@ -1,0 +1,113 @@
+<header class="page-hero">
+  <div class="container">
+    <p class="eyebrow">Služby & Technika</p>
+    <h1 class="display-xl">Produkcia na kľúč</h1>
+    <p class="lead">
+      Kreatíva, natáčanie aj postprodukcia pod jednou strechou. Vyberte si službu – alebo nám povedzte, čo potrebujete,
+      a zostavíme produkciu presne na mieru.
+    </p>
+    <nav class="jump" aria-label="Na tejto stránke">
+      <a routerLink="/sluzby" fragment="ponuka" class="pill">Produkčné služby</a>
+      <a routerLink="/sluzby" fragment="technika" class="pill pill--tech">Naša filmová technika</a>
+    </nav>
+  </div>
+</header>
+
+<section id="ponuka" class="section" aria-label="Produkčné služby">
+  <div class="container">
+    @if (services.error()) {
+      <div class="state-message">
+        <strong>Služby sa nepodarilo načítať</strong>
+        <button type="button" class="btn btn--link" (click)="services.reload()">Skúsiť znova</button>
+      </div>
+    } @else if (services.isLoading() && !services.value().length) {
+      @for (i of [1, 2, 3]; track i) {
+        <div class="skeleton service-skeleton"></div>
+      }
+    } @else {
+      <ol class="services">
+        @for (s of services.value(); track s.id; let i = $index) {
+          <li class="service" [appReveal]="0">
+            <div class="service__aside">
+              <span class="service__num mono">{{ (i + 1).toString().padStart(2, '0') }}</span>
+              <app-icon [name]="s.category.icon_name" [size]="32" [strokeWidth]="1.3" class="service__icon" />
+              <span class="service__cat">{{ s.category.name }}</span>
+            </div>
+
+            <div class="service__main">
+              <h2 class="service__title">{{ s.title }}</h2>
+              <p class="service__short">{{ s.short_description }}</p>
+              <p class="service__detail">{{ s.detailed_description }}</p>
+
+              @if (s.included_phases.length) {
+                <ul class="phases" aria-label="Čo je v cene">
+                  @for (phase of s.included_phases; track phase) {
+                    <li><app-icon name="check" [size]="16" /> {{ phase }}</li>
+                  }
+                </ul>
+              }
+            </div>
+
+            <div class="service__side">
+              <dl>
+                @if (s.starting_price_eur) {
+                  <div>
+                    <dt>Cena od</dt>
+                    <dd class="mono price">{{ s.starting_price_eur | eur }}</dd>
+                  </div>
+                }
+                <div>
+                  <dt>Bežné dodanie</dt>
+                  <dd><span class="pill pill--success">{{ s.typical_delivery_time }}</span></dd>
+                </div>
+              </dl>
+              <a class="btn btn--ghost btn--block" routerLink="/dopyt" [queryParams]="{ type: typeFor[s.category.slug] }">
+                Dopyt na túto službu
+                <app-icon name="arrow-right" [size]="16" />
+              </a>
+              <a class="btn btn--link portfolio-link" routerLink="/portfolio" [queryParams]="{ kategoria: s.category.slug }">
+                Ukážky v portfóliu
+              </a>
+            </div>
+          </li>
+        }
+      </ol>
+    }
+  </div>
+</section>
+
+<section id="technika" class="section section--surface" aria-labelledby="gear-title">
+  <div class="container">
+    <header class="section-head section-head--split">
+      <div>
+        <p class="eyebrow">Gear list</p>
+        <h2 id="gear-title">Naša filmová technika</h2>
+      </div>
+      <p class="lead">Vlastná technika znamená flexibilitu, kratšie termíny a obraz na úrovni zahraničných produkcií – bez prirážok za prenájom.</p>
+    </header>
+
+    <div class="gear">
+      @for (g of gear; track g.title; let i = $index) {
+        <article class="gear__card" [appReveal]="(i % 3) * 70">
+          <div class="gear__media">
+            <img [src]="g.imageUrl" [alt]="g.title" loading="lazy" decoding="async" />
+            <span class="pill pill--tech gear__spec">{{ g.spec }}</span>
+          </div>
+          <div class="gear__body">
+            <h3 class="gear__title"><app-icon [name]="g.icon" [size]="20" /> {{ g.title }}</h3>
+            <ul>
+              @for (item of g.items; track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          </div>
+        </article>
+      }
+    </div>
+
+    <p class="drone-note">
+      <app-icon name="shield" [size]="18" />
+      {{ site.droneCertification }}
+    </p>
+  </div>
+</section>

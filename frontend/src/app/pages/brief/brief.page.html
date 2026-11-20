@@ -1,0 +1,372 @@
+<header class="page-hero">
+  <div class="container">
+    <p class="eyebrow">Nezáväzný brief & kontakt</p>
+    <h1 class="display-xl">Povedzte nám o&nbsp;svojom videu</h1>
+    <p class="lead">
+      Tri krátke kroky a máte hotovo. Do 24 hodín sa vám ozve producentka s otázkami, návrhom riešenia a cenovou ponukou.
+    </p>
+  </div>
+</header>
+
+<section class="section section--tight">
+  <div class="container layout">
+    <div class="wizard" #formTop>
+      @if (submitted()) {
+        <div class="success" role="status">
+          <span class="success__icon"><app-icon name="check" [size]="32" [strokeWidth]="2" /></span>
+          <h2 class="display-md">Ďakujeme, brief je u nás!</h2>
+          <p class="lead">
+            {{ site.contact.responseTime }} Ozve sa vám {{ site.contact.producerName }} z adresy
+            <a class="text-accent" [href]="'mailto:' + site.contact.newBusinessEmail">{{ site.contact.newBusinessEmail }}</a>.
+          </p>
+          @if (estimateRange()) {
+            <p class="success__estimate">
+              Vaša orientačná kalkulácia: <strong class="mono">{{ estimateRange() }}</strong>
+            </p>
+          }
+          <div class="success__actions">
+            <a class="btn btn--primary" routerLink="/portfolio">Medzitým si pozrite portfólio</a>
+            <button type="button" class="btn btn--ghost" (click)="startOver()">Odoslať ďalší dopyt</button>
+          </div>
+        </div>
+      } @else {
+        <ol class="stepper" aria-label="Kroky formulára">
+          @for (s of steps; track s.n) {
+            <li>
+              <button
+                type="button"
+                class="stepper__btn"
+                [class.is-done]="step() > s.n"
+                [attr.aria-current]="step() === s.n ? 'step' : null"
+                (click)="goTo(s.n)"
+              >
+                <span class="stepper__num mono">
+                  @if (step() > s.n) {
+                    <app-icon name="check" [size]="14" [strokeWidth]="2.4" />
+                  } @else {
+                    {{ s.n }}
+                  }
+                </span>
+                <span class="stepper__label">{{ s.label }}</span>
+              </button>
+            </li>
+          }
+        </ol>
+
+        @if (prefilledFromEstimator() && step() === 3) {
+          <p class="notice">
+            <app-icon name="check" [size]="16" />
+            Typ videa, rozsah a počet dní sme predvyplnili z vašej kalkulácie. Môžete ich kedykoľvek upraviť.
+          </p>
+        }
+
+        <form class="form" novalidate (submit)="submit($event)">
+          <!-- ===================== STEP 1 ===================== -->
+          @if (step() === 1) {
+            <fieldset class="panel" [class.has-error]="showErrors(1) && step1Errors().videoType">
+              <legend class="panel__title">Aký typ videa potrebujete?</legend>
+              <div class="tiles tiles--3">
+                @for (t of videoTypes; track t.key) {
+                  <button
+                    type="button"
+                    class="choice"
+                    [attr.aria-pressed]="videoType() === t.key"
+                    (click)="videoType.set(t.key)"
+                  >
+                    <span class="choice__title">{{ t.label }}</span>
+                    <span class="choice__meta">{{ t.hint }}</span>
+                  </button>
+                }
+              </div>
+              @if (showErrors(1) && step1Errors().videoType; as err) {
+                <p class="field__error" role="alert">{{ err }}</p>
+              }
+            </fieldset>
+          }
+
+          <!-- ===================== STEP 2 ===================== -->
+          @if (step() === 2) {
+            <fieldset class="panel" [class.has-error]="showErrors(2) && step2Errors().tier">
+              <legend class="panel__title">Rozsah produkcie</legend>
+              <div class="tiles">
+                @for (t of tiers; track t.key) {
+                  <button type="button" class="choice" [attr.aria-pressed]="tier() === t.key" (click)="tier.set(t.key)">
+                    <span class="choice__title">{{ t.label }}</span>
+                    <span class="choice__meta">{{ t.hint }}</span>
+                  </button>
+                }
+              </div>
+              @if (showErrors(2) && step2Errors().tier; as err) {
+                <p class="field__error" role="alert">{{ err }}</p>
+              }
+            </fieldset>
+
+            <fieldset class="panel">
+              <legend class="panel__title">Počet natáčacích dní</legend>
+              <div class="chips">
+                @for (d of dayOptions; track d) {
+                  <button type="button" class="chip mono" [attr.aria-pressed]="days() === d" (click)="days.set(d)">
+                    {{ formatDays(d) }}
+                  </button>
+                }
+              </div>
+            </fieldset>
+
+            <fieldset class="panel">
+              <legend class="panel__title">Kde bude video bežať? <span class="optional">(voliteľné)</span></legend>
+              <div class="chips">
+                @for (p of platformOptions; track p) {
+                  <button
+                    type="button"
+                    class="chip"
+                    role="checkbox"
+                    [attr.aria-checked]="platforms().has(p)"
+                    (click)="togglePlatform(p)"
+                  >
+                    {{ p }}
+                  </button>
+                }
+              </div>
+            </fieldset>
+
+            <fieldset class="panel">
+              <legend class="panel__title">Doplnkové služby <span class="optional">(voliteľné)</span></legend>
+              <div class="chips">
+                @for (a of addonOptions; track a.key) {
+                  <button
+                    type="button"
+                    class="chip"
+                    role="checkbox"
+                    [attr.aria-checked]="addons().has(a.key)"
+                    (click)="toggleAddon(a.key)"
+                  >
+                    {{ a.label }}
+                  </button>
+                }
+              </div>
+            </fieldset>
+
+            <div class="panel">
+              <div class="field">
+                <label for="deadline">Požadovaný termín <span class="optional">(voliteľné)</span></label>
+                <input
+                  id="deadline"
+                  class="input"
+                  type="text"
+                  maxlength="120"
+                  placeholder="napr. spustenie kampane 1. marca"
+                  [value]="deadline()"
+                  (input)="deadline.set($any($event.target).value)"
+                />
+                <div class="chips chips--sm">
+                  @for (preset of deadlinePresets; track preset) {
+                    <button type="button" class="chip" [attr.aria-pressed]="deadline() === preset" (click)="deadline.set(preset)">
+                      {{ preset }}
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- ===================== STEP 3 ===================== -->
+          @if (step() === 3) {
+            <div class="panel">
+              <p class="panel__title">Kontaktné údaje a brief</p>
+              <div class="grid-2">
+                <div class="field">
+                  <label for="contact_name">Meno a priezvisko *</label>
+                  <input
+                    id="contact_name"
+                    class="input"
+                    type="text"
+                    autocomplete="name"
+                    maxlength="150"
+                    [value]="contact().contact_name"
+                    (input)="onInput('contact_name', $event)"
+                    [attr.aria-invalid]="showErrors(3) && !!step3Errors().contact_name"
+                    aria-describedby="err-contact_name"
+                  />
+                  @if (showErrors(3) && step3Errors().contact_name; as err) {
+                    <p class="field__error" id="err-contact_name">{{ err }}</p>
+                  }
+                </div>
+                <div class="field">
+                  <label for="company_name">Spoločnosť</label>
+                  <input
+                    id="company_name"
+                    class="input"
+                    type="text"
+                    autocomplete="organization"
+                    maxlength="150"
+                    [value]="contact().company_name"
+                    (input)="onInput('company_name', $event)"
+                    [attr.aria-invalid]="showErrors(3) && !!step3Errors().company_name"
+                  />
+                  @if (showErrors(3) && step3Errors().company_name; as err) {
+                    <p class="field__error">{{ err }}</p>
+                  }
+                </div>
+                <div class="field">
+                  <label for="email">E-mail *</label>
+                  <input
+                    id="email"
+                    class="input"
+                    type="email"
+                    autocomplete="email"
+                    inputmode="email"
+                    maxlength="254"
+                    [value]="contact().email"
+                    (input)="onInput('email', $event)"
+                    [attr.aria-invalid]="showErrors(3) && !!step3Errors().email"
+                    aria-describedby="err-email"
+                  />
+                  @if (showErrors(3) && step3Errors().email; as err) {
+                    <p class="field__error" id="err-email">{{ err }}</p>
+                  }
+                </div>
+                <div class="field">
+                  <label for="phone">Telefón</label>
+                  <input
+                    id="phone"
+                    class="input mono"
+                    type="tel"
+                    autocomplete="tel"
+                    inputmode="tel"
+                    maxlength="40"
+                    placeholder="+421 9xx xxx xxx"
+                    [value]="contact().phone"
+                    (input)="onInput('phone', $event)"
+                    [attr.aria-invalid]="showErrors(3) && !!step3Errors().phone"
+                    aria-describedby="err-phone"
+                  />
+                  @if (showErrors(3) && step3Errors().phone; as err) {
+                    <p class="field__error" id="err-phone">{{ err }}</p>
+                  }
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="project_description">Popis projektu *</label>
+                <textarea
+                  id="project_description"
+                  class="input"
+                  rows="6"
+                  maxlength="5000"
+                  placeholder="Čo chcete videom dosiahnuť, pre koho je určené a čo by v ňom nemalo chýbať? Pokojne pridajte odkazy na videá, ktoré sa vám páčia."
+                  [value]="contact().project_description"
+                  (input)="onInput('project_description', $event)"
+                  [attr.aria-invalid]="showErrors(3) && !!step3Errors().project_description"
+                  aria-describedby="hint-desc err-desc"
+                ></textarea>
+                <div class="field__row">
+                  @if (showErrors(3) && step3Errors().project_description; as err) {
+                    <p class="field__error" id="err-desc">{{ err }}</p>
+                  } @else {
+                    <p class="field__hint" id="hint-desc">Stačí pár viet – detaily doladíme na úvodnom hovore.</p>
+                  }
+                  <span class="field__hint mono">{{ descriptionLength() }}</span>
+                </div>
+              </div>
+
+              <div class="field consent" [class.has-error]="showErrors(3) && step3Errors().gdpr_consent">
+                <label class="checkbox">
+                  <input
+                    type="checkbox"
+                    [checked]="gdpr()"
+                    (change)="gdpr.set($any($event.target).checked)"
+                    [attr.aria-invalid]="showErrors(3) && !!step3Errors().gdpr_consent"
+                  />
+                  <span class="checkbox__box" aria-hidden="true"><app-icon name="check" [size]="14" [strokeWidth]="2.4" /></span>
+                  <span>
+                    Súhlasím so spracovaním osobných údajov na účel prípravy cenovej ponuky (GDPR). Údaje neposkytujeme
+                    tretím stranám.
+                  </span>
+                </label>
+                @if (showErrors(3) && step3Errors().gdpr_consent; as err) {
+                  <p class="field__error">{{ err }}</p>
+                }
+              </div>
+            </div>
+          }
+
+          @if (submitError(); as err) {
+            <p class="alert" role="alert">{{ err }}</p>
+          }
+
+          <div class="nav">
+            @if (step() > 1) {
+              <button type="button" class="btn btn--ghost" (click)="goTo($any(step() - 1))">
+                <app-icon name="arrow-left" [size]="16" /> Späť
+              </button>
+            } @else {
+              <span></span>
+            }
+
+            @if (step() < 3) {
+              <button type="button" class="btn btn--primary btn--lg" (click)="next()">
+                Pokračovať <app-icon name="arrow-right" [size]="18" />
+              </button>
+            } @else {
+              <button type="submit" class="btn btn--primary btn--lg" [disabled]="submitting()">
+                @if (submitting()) {
+                  Odosielam…
+                } @else {
+                  Odoslať nezáväzný dopyt <app-icon name="arrow-right" [size]="18" />
+                }
+              </button>
+            }
+          </div>
+        </form>
+      }
+    </div>
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="side">
+      <div class="summary">
+        <p class="summary__label mono">Váš brief</p>
+        <dl>
+          <div>
+            <dt>Typ videa</dt>
+            <dd>{{ selectedType()?.label ?? '—' }}</dd>
+          </div>
+          <div>
+            <dt>Rozsah</dt>
+            <dd>{{ selectedTier()?.label ?? '—' }}</dd>
+          </div>
+          <div>
+            <dt>Natáčanie</dt>
+            <dd class="mono">{{ formatDays(days()) }}</dd>
+          </div>
+          @if (platforms().size) {
+            <div>
+              <dt>Platformy</dt>
+              <dd>{{ platformsLabel() }}</dd>
+            </div>
+          }
+        </dl>
+        @if (estimateRange()) {
+          <div class="summary__estimate">
+            <p class="summary__label mono">Orientačne</p>
+            <p class="summary__price mono">{{ estimateRange() }}</p>
+            <p class="summary__note">bez DPH · dodanie {{ estimateDelivery() }}</p>
+          </div>
+        }
+      </div>
+
+      <div class="contact">
+        <p class="summary__label mono">Radšej telefonicky?</p>
+        <p class="contact__name">{{ site.contact.producerName }}</p>
+        <p class="contact__role">Výkonná producentka</p>
+        <a class="contact__line mono" [href]="phoneHref"><app-icon name="phone-call" [size]="16" /> {{ site.contact.producerPhone }}</a>
+        <a class="contact__line" [href]="'mailto:' + site.contact.newBusinessEmail"
+          ><app-icon name="mail" [size]="16" /> {{ site.contact.newBusinessEmail }}</a
+        >
+        <a class="contact__line" [href]="site.address.mapUrl" target="_blank" rel="noopener noreferrer">
+          <app-icon name="map-pin" [size]="16" /> {{ site.address.street }}, {{ site.address.zip }} {{ site.address.city }}
+        </a>
+        <p class="contact__hours"><app-icon name="clock" [size]="16" /> {{ site.contact.officeHours }}</p>
+      </div>
+    </aside>
+  </div>
+</section>

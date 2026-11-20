@@ -1,0 +1,74 @@
+<header class="page-hero">
+  <div class="container">
+    <p class="eyebrow">Portfólio</p>
+    <h1 class="display-xl">Naše práce</h1>
+    <p class="lead">
+      Reklamné kampane, firemné príbehy, energické aftermovies aj letecké zábery. Kliknite na film pre okamžité
+      prehratie alebo si otvorte celú prípadovú štúdiu.
+    </p>
+  </div>
+</header>
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="toolbar">
+      <div class="tabs" role="toolbar" aria-label="Filtrovať podľa kategórie">
+        @for (tab of tabs(); track tab.label) {
+          <button
+            type="button"
+            class="tab"
+            [attr.aria-pressed]="activeCategory() === tab.slug"
+            (click)="selectCategory(tab.slug)"
+          >
+            {{ tab.label }}
+            <span class="tab__count mono">{{ tab.count }}</span>
+          </button>
+        }
+      </div>
+
+      <label class="search">
+        <span class="visually-hidden">Hľadať v portfóliu</span>
+        <app-icon name="search" [size]="18" />
+        <input
+          type="search"
+          class="input"
+          placeholder="Klient, technika, názov…"
+          [value]="search()"
+          (input)="onSearch($event)"
+        />
+      </label>
+    </div>
+
+    <p class="results mono" aria-live="polite">
+      @if (!films.isLoading()) {
+        {{ visibleFilms().length }} / {{ films.value().length }} projektov
+      }
+    </p>
+
+    @if (films.isLoading() && !films.value().length) {
+      <div class="grid">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+          <div class="skeleton grid__skeleton"></div>
+        }
+      </div>
+    } @else if (films.error()) {
+      <div class="state-message">
+        <strong>Portfólio sa nepodarilo načítať</strong>
+        Skontrolujte, či beží API server, a skúste to znova.
+        <button type="button" class="btn btn--link" (click)="films.reload()">Skúsiť znova</button>
+      </div>
+    } @else {
+      <div class="grid">
+        @for (film of visibleFilms(); track film.id; let i = $index) {
+          <app-film-card [film]="film" [eager]="i < 3" [appReveal]="(i % 3) * 70" />
+        } @empty {
+          <div class="state-message grid__empty">
+            <strong>Nenašli sme žiadny projekt</strong>
+            Skúste iný výraz alebo zrušte filter.
+            <button type="button" class="btn btn--link" (click)="resetFilters()">Zobraziť všetko</button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>

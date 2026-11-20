@@ -1,0 +1,133 @@
+<header class="page-hero">
+  <div class="container">
+    <p class="eyebrow">O štúdiu</p>
+    <h1 class="display-xl">Malý štáb.<br /><span class="text-accent">Veľké</span> obrazy.</h1>
+    <p class="lead">
+      {{ site.studioName }} je nezávislé produkčné štúdio z Bratislavy. Spájame filmové remeslo s rýchlosťou
+      a flexibilitou, ktorú moderné značky potrebujú.
+    </p>
+  </div>
+</header>
+
+<section class="section" aria-labelledby="philosophy-title">
+  <div class="container philosophy">
+    <div class="philosophy__media" appReveal>
+      <img
+        src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1400&q=80"
+        alt="Filmová klapka na natáčaní"
+        loading="lazy"
+      />
+      <span class="philosophy__caption mono">SCÉNA 01 · ZÁBER 07 · TAKE 3</span>
+    </div>
+    <div class="philosophy__text">
+      <p class="eyebrow">Naša filozofia</p>
+      <h2 id="philosophy-title" class="display-md">Natáčame videá, ktoré ľudia naozaj dopozerajú.</h2>
+      <p>
+        Za viac ako dekádu sme natočili stovky reklám, firemných príbehov a aftermovies. Naučili sme sa, že najlepšie
+        výsledky vznikajú, keď sa klient stane súčasťou tvorivého procesu – a keď má štáb priestor na remeslo.
+      </p>
+      <p>
+        Preto pracujeme v malých, skúsených tímoch, s vlastnou cinema technikou a s postprodukciou pod jednou strechou.
+        Žiadne zbytočné medzičlánky, žiadne prekvapenia v rozpočte.
+      </p>
+      <dl class="stats">
+        @for (m of site.trustMetrics; track m.label) {
+          <div>
+            <dd>{{ m.value }}</dd>
+            <dt>{{ m.label }}</dt>
+          </div>
+        }
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section class="section band-light" aria-labelledby="principles-title">
+  <div class="container">
+    <header class="section-head">
+      <p class="eyebrow">Ako premýšľame</p>
+      <h2 id="principles-title">Tri pravidlá, ktoré platia na každom pľaci</h2>
+    </header>
+    <ul class="principles">
+      @for (p of principles; track p.title; let i = $index) {
+        <li [appReveal]="i * 80">
+          <app-icon [name]="p.icon" [size]="30" [strokeWidth]="1.3" />
+          <h3>{{ p.title }}</h3>
+          <p>{{ p.text }}</p>
+        </li>
+      }
+    </ul>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="crew-title">
+  <div class="container">
+    <header class="section-head">
+      <p class="eyebrow">Štáb</p>
+      <h2 id="crew-title">Ľudia za kamerou</h2>
+      <p class="lead">Jadro tímu, ktoré rozširujeme o overených freelancerov podľa potrieb produkcie.</p>
+    </header>
+
+    @if (crew.error()) {
+      <div class="state-message"><strong>Tím sa nepodarilo načítať</strong>Skúste obnoviť stránku.</div>
+    } @else {
+      <ul class="crew">
+        @for (member of crew.value(); track member.id; let i = $index) {
+          <li class="member" [appReveal]="i * 80">
+            <div class="member__photo">
+              <img [src]="member.photo_url" [alt]="member.full_name" loading="lazy" decoding="async" />
+            </div>
+            <p class="member__role mono">{{ member.role_title }}</p>
+            <h3 class="member__name">{{ member.full_name }}</h3>
+            <p class="member__bio">{{ member.bio }}</p>
+            @if (member.specialty_gear) {
+              <p class="member__gear"><app-icon name="camera" [size]="14" /> {{ member.specialty_gear }}</p>
+            }
+          </li>
+        } @empty {
+          @if (crew.isLoading()) {
+            @for (i of [1, 2, 3, 4]; track i) {
+              <li class="skeleton member--skeleton"></li>
+            }
+          }
+        }
+      </ul>
+    }
+  </div>
+</section>
+
+<section class="section section--surface" aria-labelledby="faq-title">
+  <div class="container faq-layout">
+    <header class="section-head">
+      <p class="eyebrow">FAQ</p>
+      <h2 id="faq-title">Časté otázky</h2>
+      <p class="lead">Nenašli ste odpoveď? Zavolajte nám na <a class="mono text-accent" [href]="phoneHref">{{ site.contact.producerPhone }}</a>.</p>
+      <div><a class="btn btn--primary" routerLink="/dopyt">Nezáväzný dopyt</a></div>
+    </header>
+
+    <div class="faq">
+      @for (item of faq; track item.question; let i = $index) {
+        <div class="faq__item" [class.is-open]="openFaq() === i">
+          <h3>
+            <button
+              type="button"
+              class="faq__q"
+              [id]="'faq-q-' + i"
+              [attr.aria-expanded]="openFaq() === i"
+              [attr.aria-controls]="'faq-a-' + i"
+              (click)="toggleFaq(i)"
+            >
+              <span>{{ item.question }}</span>
+              <app-icon name="plus" [size]="20" class="faq__icon" />
+            </button>
+          </h3>
+          <div class="faq__a" [id]="'faq-a-' + i" role="region" [attr.aria-labelledby]="'faq-q-' + i">
+            <div class="faq__inner">
+              <p>{{ item.answer }}</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>

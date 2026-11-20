@@ -1,0 +1,118 @@
+@use 'variables' as v;
+@use 'mixins' as m;
+
+.section--tight {
+  padding-top: v.$space-6;
+}
+
+.toolbar {
+  display: grid;
+  gap: v.$space-4;
+  padding-bottom: v.$space-5;
+  border-bottom: 1px solid var(--color-border);
+
+  @include m.up(lg) {
+    grid-template-columns: 1fr 320px;
+    align-items: center;
+  }
+}
+
+.tabs {
+  display: flex;
+  gap: v.$space-2;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-inline: calc(-1 * v.$gutter);
+  padding-inline: v.$gutter;
+
+  @include m.up(lg) {
+    flex-wrap: wrap;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.tab {
+  @include m.reset-button;
+  display: inline-flex;
+  align-items: center;
+  gap: v.$space-2;
+  min-height: 42px;
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--color-text-muted);
+  transition: all v.$duration-fast ease;
+
+  &:hover {
+    color: var(--color-text);
+    border-color: var(--color-text-muted);
+  }
+
+  &[aria-pressed='true'] {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-accent-contrast);
+  }
+
+  &__count {
+    font-size: 0.7rem;
+    opacity: 0.7;
+  }
+}
+
+.search {
+  position: relative;
+  display: block;
+
+  app-icon {
+    position: absolute;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    pointer-events: none;
+  }
+
+  .input {
+    padding-left: 2.6rem;
+  }
+}
+
+.results {
+  min-height: 1.5em;
+  margin: v.$space-4 0 v.$space-5;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.grid {
+  display: grid;
+  gap: v.$space-4;
+
+  @include m.up(md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include m.up(lg) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: v.$space-5;
+  }
+
+  &__skeleton {
+    aspect-ratio: 4 / 3.6;
+  }
+
+  &__empty {
+    grid-column: 1 / -1;
+  }
+}

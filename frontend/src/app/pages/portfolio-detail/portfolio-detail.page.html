@@ -1,0 +1,136 @@
+@if (film.value(); as f) {
+  <article>
+    <header class="head">
+      <div class="container head__inner">
+        <a class="back" routerLink="/portfolio">
+          <app-icon name="arrow-left" [size]="16" /> Späť na portfólio
+        </a>
+        <div class="head__tags">
+          <a class="pill pill--accent" routerLink="/portfolio" [queryParams]="{ kategoria: f.category.slug }">{{
+            f.category.name
+          }}</a>
+          <span class="pill mono">{{ f.production_year }}</span>
+        </div>
+        <h1 class="display-lg title">{{ f.title }}</h1>
+        <p class="client">
+          <span>Klient:</span> <strong>{{ f.client_name }}</strong>
+          @if (f.client_sector) {
+            <span class="client__sector">· {{ f.client_sector }}</span>
+          }
+        </p>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="player">
+        @if (playerUrl(); as url) {
+          <iframe
+            [src]="url"
+            [title]="f.title"
+            allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+            allowfullscreen
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
+        } @else {
+          <img [src]="f.thumbnail_url" [alt]="f.title" />
+        }
+      </div>
+
+      <dl class="specs" aria-label="Technické parametre produkcie">
+        <div class="spec spec--wide">
+          <dt><app-icon name="camera" [size]="16" /> Kamera a objektívy</dt>
+          <dd>
+            @for (g of gearItems(); track g) {
+              <span class="pill pill--tech">{{ g }}</span>
+            }
+          </dd>
+        </div>
+        <div class="spec">
+          <dt><app-icon name="calendar" [size]="16" /> Natáčacie dni</dt>
+          <dd class="mono">{{ f.filming_days }}</dd>
+        </div>
+        <div class="spec">
+          <dt><app-icon name="clock" [size]="16" /> Dĺžka videa</dt>
+          <dd class="mono">{{ f.duration_timecode }}</dd>
+        </div>
+        <div class="spec">
+          <dt><app-icon name="film" [size]="16" /> Rok výroby</dt>
+          <dd class="mono">{{ f.production_year }}</dd>
+        </div>
+      </dl>
+
+      <div class="story">
+        <section class="story__block">
+          <p class="eyebrow">Zadanie klienta</p>
+          <h2 class="story__title">Výzva</h2>
+          <p>{{ f.creative_brief }}</p>
+        </section>
+        <section class="story__block">
+          <p class="eyebrow">Kreatívne riešenie</p>
+          <h2 class="story__title">Ako sme to natočili</h2>
+          <p>{{ f.execution_summary }}</p>
+        </section>
+      </div>
+
+      @if (f.deliverables_tags.length) {
+        <section class="deliverables" aria-labelledby="deliverables-title">
+          <h2 id="deliverables-title" class="deliverables__title">Dodané formáty</h2>
+          <ul>
+            @for (tag of f.deliverables_tags; track tag) {
+              <li><app-icon name="check" [size]="16" /> {{ tag }}</li>
+            }
+          </ul>
+        </section>
+      }
+
+      <aside class="cta">
+        <div>
+          <p class="eyebrow">Páči sa vám tento projekt?</p>
+          <p class="cta__title">Natočíme podobný príbeh aj pre vašu značku.</p>
+        </div>
+        <a class="btn btn--primary btn--lg" routerLink="/dopyt" [queryParams]="briefParams()">
+          Chcem podobné video pre našu firmu
+          <app-icon name="arrow-right" [size]="18" />
+        </a>
+      </aside>
+    </div>
+
+    @if (f.related_films.length) {
+      <section class="section related" aria-labelledby="related-title">
+        <div class="container">
+          <header class="section-head">
+            <p class="eyebrow">Ďalšie projekty</p>
+            <h2 id="related-title">Mohlo by vás zaujímať</h2>
+          </header>
+          <div class="related__grid">
+            @for (r of f.related_films; track r.id) {
+              <app-film-card [film]="r" />
+            }
+          </div>
+        </div>
+      </section>
+    }
+  </article>
+} @else if (notFound()) {
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">404</p>
+      <h1 class="display-lg">Tento projekt sme nenašli</h1>
+      <p class="lead">Možno bol presunutý alebo odstránený. Pozrite si ďalšie práce v našom portfóliu.</p>
+      <div><a class="btn btn--primary" routerLink="/portfolio">Späť na portfólio</a></div>
+    </div>
+  </section>
+} @else if (film.error()) {
+  <section class="page-hero">
+    <div class="container">
+      <h1 class="display-md">Projekt sa nepodarilo načítať</h1>
+      <div><button type="button" class="btn btn--primary" (click)="film.reload()">Skúsiť znova</button></div>
+    </div>
+  </section>
+} @else {
+  <div class="container loading" aria-busy="true" aria-label="Načítava sa projekt">
+    <div class="skeleton loading__title"></div>
+    <div class="skeleton loading__player"></div>
+  </div>
+}
