@@ -1,0 +1,238 @@
+@use 'variables' as v;
+@use 'mixins' as m;
+
+:host {
+  display: block;
+}
+
+.estimator {
+  display: grid;
+  gap: v.$space-6;
+
+  @include m.up(lg) {
+    grid-template-columns: minmax(0, 1.55fr) minmax(340px, 1fr);
+    align-items: start;
+    gap: v.$space-7;
+  }
+}
+
+.config {
+  display: grid;
+  gap: v.$space-6;
+}
+
+.group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+
+  &__legend {
+    display: flex;
+    align-items: center;
+    gap: v.$space-3;
+    margin-bottom: v.$space-4;
+    padding: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+}
+
+.step {
+  font-size: 0.72rem;
+  color: var(--color-accent);
+  padding: 0.2rem 0.45rem;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+  border-radius: v.$radius-sm;
+}
+
+.options {
+  display: grid;
+  gap: v.$space-3;
+
+  &--types {
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  }
+
+  &--tiers {
+    @include m.up(md) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  &--addons {
+    @include m.up(sm) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+.choice--toggle {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: v.$space-3;
+
+  > span:last-child {
+    display: grid;
+    gap: v.$space-1;
+  }
+}
+
+.check {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: v.$radius-sm;
+  color: transparent;
+  transition: all v.$duration-fast ease;
+
+  [aria-checked='true'] & {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-accent-contrast);
+  }
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border: 1px solid var(--color-border-strong);
+  border-radius: v.$radius-sm;
+  overflow: hidden;
+}
+
+.day {
+  @include m.reset-button;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: v.$space-3 v.$space-2;
+  background: var(--color-bg);
+  transition: background-color v.$duration-fast ease, color v.$duration-fast ease;
+
+  & + & {
+    border-left: 1px solid var(--color-border-strong);
+  }
+
+  .mono {
+    font-size: 1.35rem;
+    font-weight: 600;
+  }
+
+  &__unit {
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+  }
+
+  &:hover {
+    background: var(--color-surface-raised);
+  }
+
+  &[aria-pressed='true'] {
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+
+    .day__unit {
+      color: inherit;
+    }
+  }
+}
+
+.summary {
+  @include m.up(lg) {
+    position: sticky;
+    top: calc(var(--header-height) + 1.5rem);
+  }
+
+  &__inner {
+    display: grid;
+    gap: v.$space-5;
+    padding: v.$space-6;
+    background:
+      radial-gradient(ellipse 90% 60% at 100% 0%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent 70%),
+      var(--color-surface);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, var(--color-border));
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: v.$space-2;
+    @include m.mono-label(0.7rem);
+    color: var(--color-text-muted);
+  }
+
+  &__note {
+    margin-top: calc(-1 * v.$space-3);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+}
+
+.price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 v.$space-3;
+  font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--color-accent);
+  letter-spacing: -0.02em;
+
+  &__sep {
+    color: var(--color-text-muted);
+    font-weight: 300;
+  }
+}
+
+.facts {
+  display: grid;
+  margin: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.fact {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: v.$space-3;
+  align-items: center;
+  padding-block: v.$space-3;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+
+  dt {
+    display: flex;
+    align-items: center;
+    gap: v.$space-2;
+    color: var(--color-text-muted);
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.crew {
+  display: grid;
+  gap: v.$space-3;
+
+  ul {
+    @include m.reset-list;
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$space-2;
+  }
+
+  li {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.8rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: v.$radius-sm;
+  }
+}

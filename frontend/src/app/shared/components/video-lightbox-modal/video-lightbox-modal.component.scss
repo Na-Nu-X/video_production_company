@@ -1,0 +1,107 @@
+@use 'variables' as v;
+@use 'mixins' as m;
+
+.lightbox {
+  width: min(1180px, calc(100vw - 2rem));
+  max-width: none;
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  margin: auto;
+  border: 1px solid var(--color-border-strong);
+  border-radius: v.$radius-md;
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow: auto;
+
+  &::backdrop {
+    background: rgba(4, 5, 7, 0.88);
+    backdrop-filter: blur(8px);
+  }
+
+  &[open] {
+    animation: lightbox-in v.$duration-base v.$ease-cinema;
+
+    &::backdrop {
+      animation: fade-in v.$duration-base ease;
+    }
+
+    @include m.reduced-motion {
+      animation: none;
+    }
+  }
+}
+
+.frame {
+  display: grid;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: v.$space-4;
+  padding: v.$space-4 v.$space-4 v.$space-4 v.$space-5;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  margin-top: v.$space-2;
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  margin-top: v.$space-1;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.close {
+  @include m.reset-button;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: v.$radius-sm;
+  transition: border-color v.$duration-fast ease, color v.$duration-fast ease;
+
+  &:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+}
+
+.player {
+  @include m.widescreen;
+  background: #000;
+}
+
+.error {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: v.$space-5;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,192 @@
+@use 'variables' as v;
+@use 'mixins' as m;
+
+:host {
+  display: block;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  @include m.surface;
+  transition: border-color v.$duration-base ease;
+
+  &:hover,
+  &:focus-within {
+    border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+  }
+}
+
+.media {
+  @include m.widescreen;
+
+  img {
+    transform: scale(1.001);
+    transition:
+      transform 1.1s v.$ease-cinema,
+      filter v.$duration-base ease;
+    filter: saturate(0.92);
+  }
+
+  &__shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(9, 10, 13, 0.55) 0%, transparent 32%, transparent 62%, rgba(9, 10, 13, 0.7) 100%);
+    pointer-events: none;
+  }
+}
+
+.card:hover .media img,
+.card:focus-within .media img {
+  transform: scale(1.06);
+  filter: saturate(1.05);
+
+  @include m.reduced-motion {
+    transform: none;
+  }
+}
+
+.badge {
+  position: absolute;
+  top: v.$space-3;
+  left: v.$space-3;
+  background: rgba(9, 10, 13, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.timecode {
+  position: absolute;
+  right: v.$space-3;
+  bottom: v.$space-3;
+  display: inline-flex;
+  align-items: center;
+  gap: v.$space-2;
+  padding: 0.3rem 0.55rem;
+  background: rgba(9, 10, 13, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: v.$radius-sm;
+  font-size: 0.74rem;
+  color: #f4f4f6;
+  letter-spacing: 0.06em;
+}
+
+.rec {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ef4444;
+}
+
+.play {
+  @include m.reset-button;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+
+  &__ring {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    padding-left: 3px;
+    border-radius: 50%;
+    background: rgba(9, 10, 13, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #f4f4f6;
+    backdrop-filter: blur(6px);
+    opacity: 0.85;
+    transform: scale(0.92);
+    transition:
+      transform v.$duration-base v.$ease-cinema,
+      background-color v.$duration-base ease,
+      color v.$duration-base ease,
+      opacity v.$duration-base ease;
+  }
+
+  &:hover &__ring,
+  &:focus-visible &__ring {
+    opacity: 1;
+    transform: scale(1);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-accent-contrast);
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible .play__ring {
+    @include m.focus-ring;
+  }
+}
+
+.card:hover .play__ring {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-3;
+  padding: v.$space-5;
+  flex: 1;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: v.$space-2;
+  @include m.mono-label(0.7rem);
+  color: var(--color-text-muted);
+}
+
+.client {
+  color: var(--color-text);
+}
+
+.title {
+  font-size: 1.15rem;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/// Makes the whole body clickable while keeping the play button separately interactive.
+.stretched {
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible::after {
+    @include m.focus-ring;
+  }
+}
+
+.gear {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+:host(.is-large) {
+  .title {
+    font-size: clamp(1.25rem, 2vw, 1.6rem);
+  }
+
+  .body {
+    padding: v.$space-6;
+  }
+}

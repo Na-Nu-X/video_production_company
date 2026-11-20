@@ -1,0 +1,62 @@
+<div class="bar">
+  <a class="wordmark" routerLink="/" [attr.aria-label]="site.studioName + ' – domov'">
+    <span class="wordmark__primary">{{ site.wordmark.primary }}</span>
+    <span class="wordmark__dot" aria-hidden="true"></span>
+    <span class="wordmark__secondary">{{ site.wordmark.secondary }}</span>
+  </a>
+
+  <nav class="nav" aria-label="Hlavná navigácia">
+    <ul>
+      @for (link of links; track link.label) {
+        <li>
+          @if (link.fragment) {
+            <a [routerLink]="link.path" [fragment]="link.fragment">{{ link.label }}</a>
+          } @else {
+            <a [routerLink]="link.path" routerLinkActive="is-active" ariaCurrentWhenActive="page">{{ link.label }}</a>
+          }
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <div class="actions">
+    <a class="phone mono" [href]="phoneHref">
+      {{ site.contact.producerPhone }}
+    </a>
+    <a class="btn btn--primary btn--sm cta" routerLink="/dopyt">
+      Nezáväzný dopyt
+      <app-icon name="arrow-right" [size]="16" />
+    </a>
+    <button
+      type="button"
+      class="burger"
+      [attr.aria-expanded]="menuOpen()"
+      aria-controls="mobile-drawer"
+      [attr.aria-label]="menuOpen() ? 'Zavrieť menu' : 'Otvoriť menu'"
+      (click)="toggleMenu()"
+    >
+      <app-icon [name]="menuOpen() ? 'close' : 'menu'" [size]="24" />
+    </button>
+  </div>
+</div>
+
+<div id="mobile-drawer" class="drawer" [class.is-open]="menuOpen()" [attr.inert]="menuOpen() ? null : ''">
+  <nav aria-label="Mobilná navigácia">
+    <ul>
+      @for (link of links; track link.label; let i = $index) {
+        <li [style.--i]="i">
+          @if (link.fragment) {
+            <a [routerLink]="link.path" [fragment]="link.fragment" (click)="closeMenu()">{{ link.label }}</a>
+          } @else {
+            <a [routerLink]="link.path" routerLinkActive="is-active" ariaCurrentWhenActive="page">{{ link.label }}</a>
+          }
+        </li>
+      }
+    </ul>
+  </nav>
+  <div class="drawer__footer">
+    <a class="btn btn--primary btn--lg btn--block" routerLink="/dopyt">Nezáväzný dopyt</a>
+    <a class="drawer__contact mono" [href]="phoneHref">{{ site.contact.producerPhone }}</a>
+    <a class="drawer__contact" [href]="'mailto:' + site.contact.newBusinessEmail">{{ site.contact.newBusinessEmail }}</a>
+  </div>
+</div>

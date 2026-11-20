@@ -1,0 +1,38 @@
+<article class="card">
+  <div class="media">
+    <img
+      [src]="film().thumbnail_url"
+      [alt]="film().title"
+      [attr.loading]="eager() ? 'eager' : 'lazy'"
+      [attr.fetchpriority]="eager() ? 'high' : null"
+      decoding="async"
+      width="1600"
+      height="900"
+    />
+    <div class="media__shade" aria-hidden="true"></div>
+    <span class="badge pill pill--accent">{{ shortCategory() }}</span>
+    <span class="timecode mono" [attr.aria-label]="'Dĺžka videa ' + film().duration_timecode">
+      <span class="rec" aria-hidden="true"></span>{{ film().duration_timecode }}
+    </span>
+    <button type="button" class="play" (click)="play($event)" [attr.aria-label]="'Prehrať video: ' + film().title">
+      <span class="play__ring"><app-icon name="play" [size]="22" /></span>
+    </button>
+  </div>
+
+  <div class="body">
+    <p class="meta">
+      <span class="client">{{ film().client_name }}</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span class="mono">{{ film().production_year }}</span>
+    </p>
+    <h3 class="title">
+      <a [routerLink]="['/portfolio', film().slug]" class="stretched">{{ film().title }}</a>
+    </h3>
+    @if (primaryGear()) {
+      <span class="pill pill--tech gear">
+        <app-icon name="camera" [size]="13" />
+        {{ primaryGear() }}
+      </span>
+    }
+  </div>
+</article>

@@ -1,0 +1,109 @@
+<div class="estimator">
+  <div class="config">
+    <fieldset class="group">
+      <legend class="group__legend"><span class="step mono">01</span> Typ videa</legend>
+      <div class="options options--types">
+        @for (type of videoTypes; track type.key) {
+          <button
+            type="button"
+            class="choice"
+            [attr.aria-pressed]="videoType() === type.key"
+            (click)="videoType.set(type.key)"
+          >
+            <span class="choice__title">{{ type.label }}</span>
+            <span class="choice__meta">{{ type.hint }}</span>
+          </button>
+        }
+      </div>
+    </fieldset>
+
+    <fieldset class="group">
+      <legend class="group__legend"><span class="step mono">02</span> Rozsah produkcie a techniky</legend>
+      <div class="options options--tiers">
+        @for (t of tiers; track t.key) {
+          <button type="button" class="choice" [attr.aria-pressed]="tier() === t.key" (click)="tier.set(t.key)">
+            <span class="choice__title">{{ t.shortLabel }}</span>
+            <span class="choice__meta">{{ t.hint }}</span>
+          </button>
+        }
+      </div>
+    </fieldset>
+
+    <fieldset class="group">
+      <legend class="group__legend"><span class="step mono">03</span> Počet natáčacích dní</legend>
+      <div class="days">
+        @for (d of dayOptions; track d) {
+          <button type="button" class="day" [attr.aria-pressed]="days() === d" (click)="days.set(d)">
+            <span class="mono">{{ d === 0.5 ? '½' : d }}</span>
+            <span class="day__unit">{{ formatDays(d).split(' ')[1] }}</span>
+          </button>
+        }
+      </div>
+    </fieldset>
+
+    <fieldset class="group">
+      <legend class="group__legend"><span class="step mono">04</span> Doplnkové služby</legend>
+      <div class="options options--addons">
+        @for (a of addonOptions; track a.key) {
+          <button
+            type="button"
+            class="choice choice--toggle"
+            role="checkbox"
+            [attr.aria-checked]="addons().has(a.key)"
+            (click)="toggleAddon(a.key)"
+          >
+            <span class="check" aria-hidden="true"><app-icon name="check" [size]="14" [strokeWidth]="2.4" /></span>
+            <span>
+              <span class="choice__title">{{ a.label }}</span>
+              <span class="choice__meta">{{ a.hint }}</span>
+            </span>
+          </button>
+        }
+      </div>
+    </fieldset>
+  </div>
+
+  <aside class="summary" aria-labelledby="estimate-heading">
+    <div class="summary__inner">
+      <p class="summary__label mono" id="estimate-heading">Orientačná investícia</p>
+      <p class="price" aria-live="polite">
+        <span class="mono">{{ priceMin() }}</span>
+        <span class="price__sep" aria-hidden="true">–</span>
+        <span class="mono">{{ priceMax() }}</span>
+        <span class="visually-hidden">bez DPH</span>
+      </p>
+      <p class="summary__note">bez DPH · finálnu cenu potvrdíme po krátkom úvodnom hovore</p>
+
+      <dl class="facts">
+        <div class="fact">
+          <dt><app-icon name="clock" [size]="16" /> Dodanie</dt>
+          <dd><span class="pill pill--success">{{ delivery() }}</span></dd>
+        </div>
+        <div class="fact">
+          <dt><app-icon name="calendar" [size]="16" /> Natáčanie</dt>
+          <dd class="mono">{{ formatDays(days()) }}</dd>
+        </div>
+        <div class="fact">
+          <dt><app-icon name="camera" [size]="16" /> Technika</dt>
+          <dd>{{ selectedTier().label }}</dd>
+        </div>
+      </dl>
+
+      <div class="crew">
+        <p class="summary__label mono">
+          <app-icon name="users" [size]="14" /> Odporúčaný štáb ({{ estimate().crew.length }})
+        </p>
+        <ul>
+          @for (member of estimate().crew; track member) {
+            <li>{{ member }}</li>
+          }
+        </ul>
+      </div>
+
+      <button type="button" class="btn btn--primary btn--lg btn--block" (click)="sendBrief()">
+        Odoslať brief s touto kalkuláciou
+        <app-icon name="arrow-right" [size]="18" />
+      </button>
+    </div>
+  </aside>
+</div>

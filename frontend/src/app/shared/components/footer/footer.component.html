@@ -1,0 +1,83 @@
+<div class="cta-band">
+  <div class="container cta-band__inner">
+    <p class="cta-band__title">Máte nápad na video?<br /><span class="text-accent">Natočme ho spolu.</span></p>
+    <div class="cta-band__actions">
+      <a class="btn btn--primary btn--lg" routerLink="/dopyt">
+        Nezáväzný dopyt
+        <app-icon name="arrow-right" [size]="18" />
+      </a>
+      <a class="btn btn--ghost btn--lg" [href]="phoneHref">
+        <app-icon name="phone-call" [size]="18" />
+        {{ site.contact.producerPhone }}
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="container main">
+  <div class="col col--brand">
+    <a class="wordmark" routerLink="/">
+      <span>{{ site.wordmark.primary }}</span>
+      <span class="wordmark__secondary">{{ site.wordmark.secondary }}</span>
+    </a>
+    <p class="tagline">{{ site.tagline }}</p>
+    <ul class="social" aria-label="Sociálne siete">
+      @for (link of site.social; track link.label) {
+        <li>
+          <a [href]="link.url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="link.label">
+            <app-icon [name]="link.icon" [size]="20" />
+          </a>
+        </li>
+      }
+    </ul>
+  </div>
+
+  <nav class="col" aria-label="Rýchle odkazy">
+    <h2 class="col__title">Štúdio</h2>
+    <ul>
+      @for (link of quickLinks; track link.path) {
+        <li><a [routerLink]="link.path">{{ link.label }}</a></li>
+      }
+    </ul>
+  </nav>
+
+  <nav class="col" aria-label="Služby">
+    <h2 class="col__title">Produkcia</h2>
+    <ul>
+      @for (link of serviceLinks; track link.category) {
+        <li><a routerLink="/portfolio" [queryParams]="{ kategoria: link.category }">{{ link.label }}</a></li>
+      }
+    </ul>
+  </nav>
+
+  <address class="col">
+    <h2 class="col__title">Kontakt</h2>
+    <ul>
+      <li>
+        <a [href]="site.address.mapUrl" target="_blank" rel="noopener noreferrer">
+          {{ site.address.street }}<br />{{ site.address.zip }} {{ site.address.city }}
+        </a>
+      </li>
+      <li><a class="mono" [href]="phoneHref">{{ site.contact.producerPhone }}</a></li>
+      <li><a [href]="'mailto:' + site.contact.newBusinessEmail">{{ site.contact.newBusinessEmail }}</a></li>
+      <li class="muted">{{ site.contact.officeHours }}</li>
+    </ul>
+  </address>
+</div>
+
+<div class="container drone">
+  <app-icon name="shield" [size]="18" />
+  <p>{{ site.droneCertification }}</p>
+</div>
+
+<div class="container legal">
+  <p>
+    © {{ year }} {{ site.legalName }} · IČO: <span class="mono">{{ site.company.ico }}</span> · DIČ:
+    <span class="mono">{{ site.company.dic }}</span> · IČ DPH: <span class="mono">{{ site.company.icDph }}</span>
+  </p>
+  <p>{{ site.company.register }}</p>
+  <p class="gdpr">
+    Osobné údaje z formulárov spracúvame výlučne na účel prípravy cenovej ponuky v súlade s nariadením (EÚ) 2016/679 (GDPR)
+    a zákonom č. 18/2018 Z. z. Údaje neposkytujeme tretím stranám a môžete kedykoľvek požiadať o ich vymazanie.
+  </p>
+</div>
