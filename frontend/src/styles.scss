@@ -1,0 +1,456 @@
+@use 'variables' as v;
+@use 'mixins' as m;
+@use 'typography' as t;
+
+// =============================================================================
+// Runtime theme tokens — change these to rebrand the studio.
+// =============================================================================
+:root {
+  color-scheme: dark;
+
+  --color-bg: #{v.$color-obsidian};
+  --color-surface: #{v.$color-slate};
+  --color-surface-raised: #{v.$color-slate-raised};
+  --color-border: #{v.$color-border};
+  --color-border-strong: #{v.$color-border-strong};
+  --color-text: #{v.$color-text};
+  --color-text-muted: #{v.$color-text-muted};
+  --color-accent: #{v.$color-amber};
+  --color-accent-hover: #{v.$color-amber-hover};
+  --color-accent-contrast: #{v.$color-obsidian};
+  --color-tech: #{v.$color-sky};
+  --color-success: #{v.$color-emerald};
+  --color-danger: #{v.$color-danger};
+  --color-light-bg: #{v.$color-alabaster};
+  --color-light-text: #{v.$color-ink};
+  --color-light-muted: #4b5160;
+  --color-light-border: rgba(17, 19, 24, 0.12);
+
+  --font-display: #{v.$font-display};
+  --font-body: #{v.$font-body};
+  --font-mono: #{v.$font-mono};
+
+  --header-height: #{v.$header-height};
+  --ease-cinema: #{v.$ease-cinema};
+}
+
+// =============================================================================
+// Reset & base
+// =============================================================================
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + 1rem);
+  -webkit-text-size-adjust: 100%;
+
+  @include m.reduced-motion {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow-x: hidden;
+
+  &.is-scroll-locked {
+    overflow: hidden;
+  }
+}
+
+@include t.base;
+
+img,
+svg,
+video,
+iframe {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  @include m.focus-ring;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+// =============================================================================
+// Layout primitives
+// =============================================================================
+.container {
+  @include m.container;
+}
+
+.container--narrow {
+  @include m.container(v.$container-narrow);
+}
+
+.section {
+  @include m.section-padding;
+  position: relative;
+}
+
+.section--surface {
+  background: var(--color-surface);
+  border-block: 1px solid var(--color-border);
+}
+
+/// Warm Alabaster editorial band.
+.band-light {
+  --color-text: var(--color-light-text);
+  --color-text-muted: var(--color-light-muted);
+  --color-border: var(--color-light-border);
+  --color-surface: #ffffff;
+  --color-accent: #{v.$color-amber-hover};
+  background: var(--color-light-bg);
+  color: var(--color-light-text);
+  color-scheme: light;
+}
+
+.section-head {
+  display: grid;
+  gap: v.$space-4;
+  margin-bottom: v.$space-7;
+  max-width: 760px;
+
+  &--split {
+    max-width: none;
+
+    @include m.up(lg) {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: v.$space-7;
+    }
+  }
+
+  h2 {
+    @include t.display-lg;
+  }
+}
+
+.skip-link {
+  position: absolute;
+  left: v.$space-4;
+  top: -100px;
+  z-index: v.$z-modal + 1;
+  padding: v.$space-3 v.$space-4;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-weight: 600;
+
+  &:focus {
+    top: v.$space-4;
+  }
+}
+
+.visually-hidden {
+  @include m.visually-hidden;
+}
+
+// =============================================================================
+// Buttons
+// =============================================================================
+.btn {
+  @include m.reset-button;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: v.$space-3;
+  min-height: 48px;
+  padding: 0.8rem 1.5rem;
+  border: 1px solid transparent;
+  border-radius: v.$radius-sm;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.005em;
+  line-height: 1.2;
+  text-align: center;
+  transition:
+    background-color v.$duration-fast ease,
+    border-color v.$duration-fast ease,
+    color v.$duration-fast ease,
+    transform v.$duration-fast ease;
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &[disabled],
+  &[aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &--primary {
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+
+    &:hover {
+      background: var(--color-accent-hover);
+    }
+  }
+
+  &--ghost {
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
+
+    &:hover {
+      border-color: var(--color-text);
+    }
+  }
+
+  &--link {
+    min-height: auto;
+    padding: 0;
+    color: var(--color-accent);
+    font-weight: 600;
+
+    &:hover {
+      color: var(--color-text);
+    }
+  }
+
+  &--sm {
+    min-height: 40px;
+    padding: 0.55rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  &--lg {
+    min-height: 56px;
+    padding: 1rem 1.9rem;
+    font-size: 1rem;
+  }
+
+  &--block {
+    width: 100%;
+  }
+}
+
+// =============================================================================
+// Pills & tags
+// =============================================================================
+.pill {
+  @include m.pill;
+
+  &--accent {
+    @include m.pill(--color-accent);
+  }
+
+  &--tech {
+    @include m.pill(--color-tech);
+  }
+
+  &--success {
+    @include m.pill(--color-success);
+  }
+}
+
+// =============================================================================
+// Form controls
+// =============================================================================
+.field {
+  display: grid;
+  gap: v.$space-2;
+
+  label,
+  .field__label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .field__hint {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+
+  .field__error {
+    font-size: 0.8rem;
+    color: var(--color-danger);
+  }
+}
+
+.input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.75rem 0.9rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-strong);
+  border-radius: v.$radius-sm;
+  color: var(--color-text);
+  transition: border-color v.$duration-fast ease;
+
+  &::placeholder {
+    color: color-mix(in srgb, var(--color-text-muted) 70%, transparent);
+  }
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--color-text) 40%, transparent);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 22%, transparent);
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--color-danger);
+  }
+}
+
+textarea.input {
+  min-height: 150px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+/// Selectable option tiles (radio / checkbox look-alike buttons).
+.choice {
+  @include m.reset-button;
+  position: relative;
+  display: grid;
+  gap: v.$space-1;
+  padding: v.$space-4;
+  text-align: left;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-strong);
+  border-radius: v.$radius-sm;
+  transition:
+    border-color v.$duration-fast ease,
+    background-color v.$duration-fast ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+  }
+
+  &[aria-pressed='true'],
+  &[aria-checked='true'] {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 10%, var(--color-bg));
+    box-shadow: inset 0 0 0 1px var(--color-accent);
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  &__meta {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+}
+
+// =============================================================================
+// Loading & states
+// =============================================================================
+.skeleton {
+  background: linear-gradient(
+    100deg,
+    var(--color-surface) 30%,
+    var(--color-surface-raised) 50%,
+    var(--color-surface) 70%
+  );
+  background-size: 300% 100%;
+  animation: skeleton 1.6s ease-in-out infinite;
+  border-radius: v.$radius-sm;
+
+  @include m.reduced-motion {
+    animation: none;
+  }
+}
+
+@keyframes skeleton {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+.state-message {
+  @include m.surface;
+  padding: v.$space-6;
+  text-align: center;
+  color: var(--color-text-muted);
+
+  strong {
+    display: block;
+    margin-bottom: v.$space-2;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+  }
+}
+
+// Reveal-on-scroll (see RevealDirective)
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity v.$duration-slow v.$ease-cinema,
+    transform v.$duration-slow v.$ease-cinema;
+
+  &.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @include m.reduced-motion {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+// =============================================================================
+// Inner page hero
+// =============================================================================
+.page-hero {
+  position: relative;
+  padding: calc(var(--header-height) + #{v.$space-8}) 0 v.$space-7;
+  border-bottom: 1px solid var(--color-border);
+  background:
+    radial-gradient(ellipse 60% 80% at 85% 0%, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 65%),
+    var(--color-bg);
+
+  .container {
+    display: grid;
+    gap: v.$space-4;
+  }
+
+  .lead {
+    max-width: 62ch;
+  }
+}
