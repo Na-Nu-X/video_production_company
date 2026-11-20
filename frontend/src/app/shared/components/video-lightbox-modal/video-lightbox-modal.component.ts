@@ -1,9 +1,11 @@
 import { DOCUMENT } from '@angular/common';
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
   effect,
+  DestroyRef,
   ElementRef,
   inject,
   viewChild,
@@ -53,7 +55,21 @@ export class VideoLightboxModalComponent {
         dialog.close();
       }
     });
+
+    // Some close paths (e.g. Escape while focus is inside the cross-origin
+    // player iframe) can close the dialog without our (close) handler running.
+    // Watching the `open` attribute keeps state in sync no matter how it closed.
+    afterNextRender(() => {
+      const dialog = this.dialogRef().nativeElement;
+      const observer = new MutationObserver(() => {
+        if (!dialog.open && this.video() !== null) this.onDialogClose();
+      });
+      observer.observe(dialog, { attributes: true, attributeFilter: ['open'] });
+      this.destroyRef.onDestroy(() => observer.disconnect());
+    });
   }
+
+  private readonly destroyRef = inject(DestroyRef);
 
   protected close(): void {
     this.lightbox.close();
@@ -61,6 +77,7 @@ export class VideoLightboxModalComponent {
 
   /** Fired by the native dialog (Escape key or programmatic close). */
   protected onDialogClose(): void {
+    if (this.video() === null && !this.document.body.classList.contains('is-scroll-locked')) return;
     this.document.body.classList.remove('is-scroll-locked');
     this.lightbox.close();
     this.returnFocusTo?.focus?.();

@@ -6,15 +6,23 @@
   inset: 0 0 auto;
   z-index: v.$z-header;
   display: block;
-  transition:
-    background-color v.$duration-base ease,
-    border-color v.$duration-base ease,
-    backdrop-filter v.$duration-base ease;
-  border-bottom: 1px solid transparent;
+
+  // Blur lives on a pseudo-element: a backdrop-filter on the host itself would
+  // become the containing block of the fixed-position mobile drawer.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color v.$duration-base ease,
+      border-color v.$duration-base ease;
+  }
 }
 
-:host(.is-scrolled),
-:host(.is-open) {
+:host(.is-scrolled)::before,
+:host(.is-open)::before {
   background: color-mix(in srgb, var(--color-bg) 86%, transparent);
   backdrop-filter: blur(14px) saturate(140%);
   border-bottom-color: var(--color-border);

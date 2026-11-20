@@ -11,9 +11,19 @@
   padding-bottom: v.$space-5;
   border-bottom: 1px solid var(--color-border);
 
-  @include m.up(lg) {
-    grid-template-columns: 1fr 320px;
-    align-items: center;
+}
+
+.results-row {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  justify-content: space-between;
+  align-items: center;
+  gap: v.$space-4;
+  margin: v.$space-5 0;
+
+  .search {
+    flex: 1 1 280px;
+    max-width: 360px;
   }
 }
 
@@ -88,7 +98,7 @@
 
 .results {
   min-height: 1.5em;
-  margin: v.$space-4 0 v.$space-5;
+  margin: 0;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;

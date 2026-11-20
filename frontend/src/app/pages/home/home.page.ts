@@ -30,10 +30,10 @@ export class HomePage {
   private readonly lightbox = inject(LightboxService);
 
   protected readonly site = SITE_CONFIG;
-  protected readonly films = this.api.portfolioResource(() => ({ featured: true }));
-  protected readonly services = this.api.servicesResource(() => ({ featured: true }));
+  protected readonly films = this.api.portfolioResource(() => ({ ordering: '-is_featured' }));
+  protected readonly services = this.api.servicesResource();
 
-  protected readonly featuredFilms = computed(() => this.films.value().slice(0, 5));
+  protected readonly featuredFilms = computed(() => [...this.films.value()].sort((a, b) => Number(b.is_featured) - Number(a.is_featured)).slice(0, 6));
   protected readonly timecode = signal('00:00:00:00');
 
   protected readonly workflow: readonly WorkflowStep[] = [

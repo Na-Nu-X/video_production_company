@@ -182,6 +182,18 @@
 }
 
 :host(.is-large) {
+  @include m.up(lg) {
+    .media {
+      flex: 1;
+      aspect-ratio: auto;
+      min-height: 320px;
+    }
+
+    .body {
+      flex: 0 0 auto;
+    }
+  }
+
   .title {
     font-size: clamp(1.25rem, 2vw, 1.6rem);
   }

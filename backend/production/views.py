@@ -41,7 +41,7 @@ class PortfolioFilmViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = None
     filterset_class = PortfolioFilmFilter
     search_fields = ["title", "client_name", "client_sector", "camera_gear"]
-    ordering_fields = ["production_year", "display_order", "title", "filming_days"]
+    ordering_fields = ["is_featured", "production_year", "display_order", "title", "filming_days"]
     ordering = ["display_order", "-production_year"]
 
     def get_serializer_class(self):

@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams, httpResource, HttpResourceRef } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, Signal } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
@@ -12,6 +12,27 @@ import {
   ProductionService,
 } from '../models/api.models';
 
+/**
+ * Read-only view of an `httpResource`. Unlike the raw ref, `value()` never
+ * throws while the resource is in an error state (Angular 22 behaviour) —
+ * it returns the fallback instead, so templates can read it unconditionally.
+ */
+export interface ApiResource<T> {
+  readonly value: Signal<T>;
+  readonly isLoading: Signal<boolean>;
+  readonly error: Signal<unknown>;
+  reload(): boolean;
+}
+
+function toApiResource<T>(ref: HttpResourceRef<T>, fallback: T): ApiResource<T> {
+  return {
+    value: computed(() => (ref.hasValue() ? ref.value() : fallback)),
+    isLoading: ref.isLoading,
+    error: ref.error,
+    reload: () => ref.reload(),
+  };
+}
+
 export interface ListQuery {
   readonly category?: string | null;
   readonly featured?: boolean;
@@ -22,7 +43,7 @@ export interface ListQuery {
 /**
  * Thin, signal-first API facade.
  *
- * The `*Resource` methods create `httpResource`s and therefore must be called
+ * The `*Resource` methods create `httpResource`s (wrapped as {@link ApiResource}) and therefore must be called
  * from an injection context (e.g. a component field initializer).
  */
 @Injectable({ providedIn: 'root' })
@@ -40,27 +61,32 @@ export class ApiService {
     return `${this.baseUrl}/${path}${qs ? `?${qs}` : ''}`;
   }
 
-  categoriesResource(): HttpResourceRef<ProductionCategory[]> {
-    return httpResource<ProductionCategory[]>(() => this.url('categories/'), { defaultValue: [] });
+  categoriesResource(): ApiResource<ProductionCategory[]> {
+    return this.list<ProductionCategory>(() => this.url('categories/'));
   }
 
-  portfolioResource(query: () => ListQuery = () => ({})): HttpResourceRef<PortfolioFilm[]> {
-    return httpResource<PortfolioFilm[]>(() => this.url('portfolio/', query()), { defaultValue: [] });
+  portfolioResource(query: () => ListQuery = () => ({})): ApiResource<PortfolioFilm[]> {
+    return this.list<PortfolioFilm>(() => this.url('portfolio/', query()));
   }
 
-  filmResource(slug: () => string | undefined): HttpResourceRef<PortfolioFilmDetail | undefined> {
-    return httpResource<PortfolioFilmDetail>(() => {
+  filmResource(slug: () => string | undefined): ApiResource<PortfolioFilmDetail | undefined> {
+    const ref = httpResource<PortfolioFilmDetail>(() => {
       const s = slug();
       return s ? `${this.baseUrl}/portfolio/${encodeURIComponent(s)}/` : undefined;
     });
+    return toApiResource(ref, undefined);
   }
 
-  servicesResource(query: () => ListQuery = () => ({})): HttpResourceRef<ProductionService[]> {
-    return httpResource<ProductionService[]>(() => this.url('services/', query()), { defaultValue: [] });
+  servicesResource(query: () => ListQuery = () => ({})): ApiResource<ProductionService[]> {
+    return this.list<ProductionService>(() => this.url('services/', query()));
   }
 
-  crewResource(): HttpResourceRef<CrewMember[]> {
-    return httpResource<CrewMember[]>(() => this.url('crew/'), { defaultValue: [] });
+  crewResource(): ApiResource<CrewMember[]> {
+    return this.list<CrewMember>(() => this.url('crew/'));
+  }
+
+  private list<T>(url: () => string): ApiResource<T[]> {
+    return toApiResource(httpResource<T[]>(url, { defaultValue: [] }), []);
   }
 
   submitBrief(payload: BriefRequestPayload): Observable<BriefRequestPayload & { id: number }> {

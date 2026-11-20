@@ -144,6 +144,10 @@ textarea {
       align-items: end;
       gap: v.$space-7;
     }
+
+    > .lead {
+      max-width: 46ch;
+    }
   }
 
   h2 {
@@ -453,4 +457,10 @@ textarea.input {
   .lead {
     max-width: 62ch;
   }
+}
+
+// Phone numbers, timecodes etc. never break mid-value.
+a.mono,
+.nowrap {
+  white-space: nowrap;
 }

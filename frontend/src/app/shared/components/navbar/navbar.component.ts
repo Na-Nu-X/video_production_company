@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { afterNextRender, ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs';
@@ -48,6 +48,8 @@ export class NavbarComponent {
         takeUntilDestroyed(),
       )
       .subscribe(() => this.menuOpen.set(false));
+
+    afterNextRender(() => this.onScroll());
 
     effect(() => {
       this.document.body.classList.toggle('is-scroll-locked', this.menuOpen());
