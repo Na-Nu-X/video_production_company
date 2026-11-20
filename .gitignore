@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.sqlite3
+backend/staticfiles/
+backend/media/
+.env
+
+# Node / Angular
+node_modules/
+frontend/dist/
+frontend/.angular/
+*.log
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
